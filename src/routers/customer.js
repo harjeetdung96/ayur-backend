@@ -14,10 +14,17 @@ router.post('/insert-customer', async (req, res) => {
     }
 })
 
-router.get('/get-customer', async (req, res) => {
+router.get('/get-customer/:id?', async (req, res) => {
     try {
-        const getCustomer = await Customer.find();
-        res.status(200).send(getCustomer);
+        const _id = req.params.id;
+        if (_id) {
+            const getCustomer = await Customer.findById(_id);
+            res.status(200).send(getCustomer);
+        }
+        else {
+            const getCustomer = await Customer.find();
+            res.status(200).send(getCustomer);
+        }
     }
     catch (error) {
         res.status(400).send(error);
