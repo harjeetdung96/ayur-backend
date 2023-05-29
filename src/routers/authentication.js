@@ -5,6 +5,6 @@ const { authCheck } = require('../middlewares/authenticate_roles')
 
 auth.post('/register', userController.register)
 
-auth.post('/login', authCheck(['Admin', 'User']), userController.login);
+auth.post('/login', userController.login);
 
 module.exports = auth;

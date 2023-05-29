@@ -1,4 +1,8 @@
-var User = require('../models/register')
+const jwt = require('jsonwebtoken');
+var User = require('../models/user');
+const { json } = require('express');
+var matchPassword = new User();
+
 
 module.exports.register = async (req, res) => {
 
@@ -13,11 +17,26 @@ module.exports.register = async (req, res) => {
 }
 
 module.exports.login = async (req, res) => {
-
     try {
-
+        await User.findOne({ email: req.body.email })
+            .then((result) => {
+                return matchPassword.comparePassword(req.body.password, result.password)
+                    .then((check) => {
+                        if (check == 1) {
+                            jwt.sign({ email: result.email, id: result._id }, "SECRET_KEY", { expiresIn: '300s' }, (err, token) => {
+                                res.send(200, { response: { message: 'success', name: result.name, type: result.role, logged_in: 1, token: token } })
+                            })
+                        }
+                        else {
+                            res.send(402, { response: { message: 'wrong credentials' } })
+                        }
+                    })
+            })
+            .catch((error) => {
+                res.send(402, { response: error })
+            })
     }
     catch (error) {
-
+        res.send(402, { response: error })
     }
-} 
+}
