@@ -23,7 +23,7 @@ module.exports.login = async (req, res) => {
                 return matchPassword.comparePassword(req.body.password, result.password)
                     .then((check) => {
                         if (check == 1) {
-                            jwt.sign({ email: result.email, id: result._id }, "SECRET_KEY", { expiresIn: '300s' }, (err, token) => {
+                            jwt.sign({ email: result.email, id: result._id, name: result.name }, "SECRET_KEY", { expiresIn: '300s' }, (err, token) => {
                                 res.send(200, { response: { message: 'success', name: result.name, type: result.role, logged_in: 1, token: token } })
                             })
                         }
@@ -39,4 +39,18 @@ module.exports.login = async (req, res) => {
     catch (error) {
         res.send(402, { response: error })
     }
+}
+
+module.exports.profile = (req, res) => {
+
+    jwt.verify(req.token, 'SECRET_KEY', (err, authData) => {
+        if (err) {
+            res.send({ result: "invalid token" })
+        }
+        else {
+            res.send({ authData })
+        }
+
+    }
+    )
 }
